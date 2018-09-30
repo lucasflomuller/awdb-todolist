@@ -2,10 +2,16 @@ $(document).ready(() => {
     $.getJSON("/api/todos")
     .then(addTodos)
 
-    $('#todoInput').keypress(e => {
-        if (e.which == 13) {
+    // Create todo event
+    $('#todoInput').keypress(function(e) {
+        if (e.which == 13 && $(this).val()) {
             createTodo();
         }
+    });
+
+    // Remove todo event
+    $('.list').on('click', 'span', function() {
+        removeTodo($(this).parent());
     })
 });
 
@@ -23,7 +29,12 @@ function createTodo() {
 }
 
 function addTodo(todo) {
-    const newTodo = $(`<li class="task">${todo.name}</li>`);
+    // Add single todo
+    let newTodo = $(`<li class="task">
+                            ${todo.name}
+                            <span>X</span>
+                     </li>`);
+    newTodo.data({id: todo._id});
     if (todo.completed) {
         newTodo.addClass('done');
     }
@@ -34,5 +45,21 @@ function addTodos(todos) {
     // add todos to page
     todos.forEach(todo => {
         addTodo(todo);
+    });
+}
+
+function removeTodo(todo) {
+    const clickedId = todo.data('id');
+    const deleteUrl = `/api/todos/${clickedId}`;
+    $.ajax({
+        method: 'DELETE',
+        url: deleteUrl
+    })
+    .then(data => {
+        console.log(data.message)
+        todo.remove();
+    })
+    .catch(err => {
+        console.log(err);
     });
 }
