@@ -9,4 +9,4 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, IP, () => {
   console.log(`APP IS RUNNING ON PORT: ${PORT}`);
-})
+});
